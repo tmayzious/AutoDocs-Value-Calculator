@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Highspot AutoDocs Value Calculator</title>
+    <title>Highspot AutoDocs ROI Calculator</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -17,10 +17,10 @@
 
         const AutoDocsCalculator = () => {
             // --- State / Inputs ---
+            const [manualMinutes, setManualMinutes] = useState(240); // 4 hours = 240 mins
+            const [autoMinutes, setAutoMinutes] = useState(30);     // 0.5 hours = 30 mins
             const [repCount, setRepCount] = useState(100);
-            const [manualTime, setManualTime] = useState(4); // 4 hours manual build
-            const [autoTime, setAutoTime] = useState(0.5);   // 30 mins with AutoDocs
-            const [decksPerYear, setDecksPerYear] = useState(24); // 2 per month
+            const [decksPerYear, setDecksPerYear] = useState(24);
             const [repSalary, setRepSalary] = useState(125000); 
 
             // --- Constants ---
@@ -31,16 +31,19 @@
                 return repSalary / WORKING_HOURS_YEAR;
             }, [repSalary]);
 
+            const manualTimeHours = manualMinutes / 60;
+            const autoTimeHours = autoMinutes / 60;
+
             const manualAnnualCost = useMemo(() => {
-                return repCount * decksPerYear * manualTime * hourlyRate;
-            }, [repCount, decksPerYear, manualTime, hourlyRate]);
+                return repCount * decksPerYear * manualTimeHours * hourlyRate;
+            }, [repCount, decksPerYear, manualTimeHours, hourlyRate]);
 
             const autoDocsAnnualCost = useMemo(() => {
-                return repCount * decksPerYear * autoTime * hourlyRate;
-            }, [repCount, decksPerYear, autoTime, hourlyRate]);
+                return repCount * decksPerYear * autoTimeHours * hourlyRate;
+            }, [repCount, decksPerYear, autoTimeHours, hourlyRate]);
 
             const annualSavings = manualAnnualCost - autoDocsAnnualCost;
-            const hoursReclaimed = (manualTime - autoTime) * decksPerYear * repCount;
+            const hoursReclaimed = (manualTimeHours - autoTimeHours) * decksPerYear * repCount;
 
             // Helper to format currency
             const formatter = new Intl.NumberFormat('en-US', {
@@ -67,8 +70,21 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">Manual Hours per Deck: <span class="text-blue-600 font-bold">{manualTime}h</span></label>
-                                <input type="range" min="0.5" max="10" step="0.5" value={manualTime} onChange={(e) => setManualTime(Number(e.target.value))} class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Manual Time per Deck: <span class="text-blue-600 font-bold">{manualMinutes} min</span></label>
+                                <input type="range" min="15" max="600" step="15" value={manualMinutes} onChange={(e) => setManualMinutes(Number(e.target.value))} class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                                <div class="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
+                                    <span>15m</span>
+                                    <span>10h</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">AutoDocs Time per Deck: <span class="text-green-600 font-bold">{autoMinutes} min</span></label>
+                                <input type="range" min="1" max="120" step="1" value={autoMinutes} onChange={(e) => setAutoMinutes(Number(e.target.value))} class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600" />
+                                <div class="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
+                                    <span>1m</span>
+                                    <span>2h</span>
+                                </div>
                             </div>
 
                             <div>
@@ -79,11 +95,6 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-600 mb-1">Avg. Rep Salary (OTE): <span class="text-blue-600 font-bold">{formatter.format(repSalary)}</span></label>
                                 <input type="range" min="50000" max="300000" step="5000" value={repSalary} onChange={(e) => setRepSalary(Number(e.target.value))} class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                            </div>
-
-                            <div class="pt-4 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                                <p class="text-xs text-gray-500 uppercase font-bold mb-1">AutoDocs Efficiency</p>
-                                <p class="text-sm text-gray-700">Calculated AutoDocs build time: <strong>30 Minutes</strong></p>
                             </div>
                         </div>
 
@@ -100,7 +111,7 @@
                             <div class="grid grid-cols-2 gap-4 pt-6 border-t border-blue-200">
                                 <div class="text-center">
                                     <p class="text-xs text-blue-600 uppercase font-bold">Hours Reclaimed</p>
-                                    <p class="text-xl font-bold text-blue-900">{hoursReclaimed.toLocaleString()}</p>
+                                    <p class="text-xl font-bold text-blue-900">{Math.round(hoursReclaimed).toLocaleString()}</p>
                                 </div>
                                 <div class="text-center">
                                     <p class="text-xs text-blue-600 uppercase font-bold">Cost per Hour</p>
@@ -111,7 +122,7 @@
                             <div class="mt-4 p-4 bg-white rounded-lg shadow-sm">
                                 <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">The Impact</h4>
                                 <p class="text-sm text-gray-600 leading-relaxed">
-                                    By automating manual slide creation, you reclaim <strong>{((manualTime - autoTime) * decksPerYear).toFixed(1)} hours</strong> per rep, per year. 
+                                    By automating manual slide creation, you reclaim <strong>{(hoursReclaimed / repCount).toFixed(1)} hours</strong> per rep, per year. 
                                     This time is better spent in front of customers, driving revenue instead of formatting decks.
                                 </p>
                             </div>
