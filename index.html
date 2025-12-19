@@ -83,7 +83,17 @@
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Manual Time per Deck: <span className="text-blue-600 font-bold">{manualMinutes} min</span></label>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Avg Salary per Rep: <span className="text-blue-600 font-bold">{formatter.format(repSalary)}</span></label>
+                                <input type="range" min="50000" max="300000" step="5000" value={repSalary} onChange={(e) => setRepSalary(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Decks built per year per rep: <span className="text-blue-600 font-bold">{decksPerYear}</span></label>
+                                <input type="range" min="1" max="100" value={decksPerYear} onChange={(e) => setDecksPerYear(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Time to manually create the deck: <span className="text-blue-600 font-bold">{manualMinutes} min</span></label>
                                 <input type="range" min="15" max="600" step="15" value={manualMinutes} onChange={(e) => setManualMinutes(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
                                 <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
                                     <span>15m</span>
@@ -92,22 +102,12 @@
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">AutoDocs Time per Deck: <span className="text-green-600 font-bold">{autoMinutes} min</span></label>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Time to create the deck using AutoDocs: <span className="text-green-600 font-bold">{autoMinutes} min</span></label>
                                 <input type="range" min="1" max="120" step="1" value={autoMinutes} onChange={(e) => setAutoMinutes(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600" />
                                 <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
                                     <span>1m</span>
                                     <span>2h</span>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Decks built per Rep/Year: <span className="text-blue-600 font-bold">{decksPerYear}</span></label>
-                                <input type="range" min="1" max="100" value={decksPerYear} onChange={(e) => setDecksPerYear(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Avg. Rep Salary (OTE): <span className="text-blue-600 font-bold">{formatter.format(repSalary)}</span></label>
-                                <input type="range" min="50000" max="300000" step="5000" value={repSalary} onChange={(e) => setRepSalary(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
                             </div>
                         </div>
 
